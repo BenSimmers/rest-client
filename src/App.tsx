@@ -1,8 +1,9 @@
 import { SetStateAction, useState } from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
 
-function UrlInput({ url, onChange }: any) {
+
+
+export const UrlInput = ({ url, onChange }: UrlInputProps) => {
   return (
     <div className="mb-4">
       <label htmlFor="url" className="font-bold">
@@ -19,28 +20,29 @@ function UrlInput({ url, onChange }: any) {
   )
 }
 
-function ProtocolSelect({ protocol, onChange }: any) {
-  return (
-    <div className="mb-4">
-      <label htmlFor="protocol" className="font-bold">
-        Protocol
-      </label>
-      <select
-        id="protocol"
-        value={protocol}
-        onChange={onChange}
-        className="w-full border border-gray-300 rounded p-2"
-      >
-        <option>GET</option>
-        <option>POST</option>
-        <option>PUT</option>
-        <option>DELETE</option>
-      </select>
-    </div>
-  )
-}
+export const ProtocolSelect: React.FunctionComponent<ProtocolSelectProps> = ({
+  protocol,
+  onChange
+}) => (
+  <div className="mb-4">
+    <label htmlFor="protocol" className="font-bold">
+      Protocol
+    </label>
+    <select
+      id="protocol"
+      value={protocol}
+      onChange={onChange}
+      className="w-full border border-gray-300 rounded p-2"
+    >
+      <option>GET</option>
+      <option>POST</option>
+      <option>PUT</option>
+      <option>DELETE</option>
+    </select>
+  </div>
+)
 
-function HeadersInput({
+const HeadersInput: React.FunctionComponent<HeadersInputProps> = ({
   headerKey,
   headerValue,
   onKeyChange,
@@ -48,7 +50,7 @@ function HeadersInput({
   onAddHeader,
   headers,
   onRemoveHeader
-}: any): JSX.Element {
+}) => {
   return (
     <div className="mb-4">
       <label htmlFor="headers" className="font-bold">
@@ -102,90 +104,90 @@ function HeadersInput({
   )
 }
 
-function BodyInput({ body, onChange }: any) {
-  return (
-    <div className="mb-4">
-      <label htmlFor="body" className="font-bold">
-        Body
-      </label>
-      <textarea
-        id="body"
-        rows={3}
-        value={body}
-        onChange={onChange}
-        className="w-full border border-gray-300 rounded p-2"
-      />
-    </div>
-  )
-}
+export const BodyInput: React.FunctionComponent<BodyInputProps> = ({
+  body,
+  onChange
+}) => (
+  <div className="mb-4">
+    <label htmlFor="body" className="font-bold">
+      Body
+    </label>
+    <textarea
+      id="body"
+      rows={3}
+      value={body}
+      onChange={onChange}
+      className="w-full border border-gray-300 rounded p-2"
+    />
+  </div>
+)
 
-function SendButton({ onClick }: any) {
-  return (
-    <button
-      onClick={onClick}
-      className="bg-green-500 hover:bg-green-600 text-white rounded py-2 px-4"
-    >
-      Send
-    </button>
-  )
-}
+export const SendButton: React.FunctionComponent<SendButtonProps> = ({
+  onClick
+}) => (
+  <button
+    onClick={onClick}
+    className="bg-green-500 hover:bg-green-600 text-white rounded py-2 px-4"
+  >
+    Send
+  </button>
+)
 
-function ResponseTextarea({ response }: any) {
-  return (
-    <div className="mb-4">
-      <label htmlFor="response" className="font-bold">
-        Response
-      </label>
-      <textarea
-        style={{ height: '300px', width: '100%' }}
-        id="response"
-        rows={3}
-        value={response}
-        readOnly
-        className="w-full border border-gray-300 rounded p-2"
-      />
-    </div>
-  )
-}
+export const ResponseTextarea: React.FunctionComponent<
+  ResponseTextareaProps
+> = ({ response }) => (
+  <div className="mb-4">
+    <label htmlFor="response" className="font-bold">
+      Response
+    </label>
+    <textarea
+      style={{ height: '300px', width: '100%' }}
+      id="response"
+      rows={3}
+      value={response}
+      readOnly
+      className="w-full border border-gray-300 rounded p-2"
+    />
+  </div>
+)
 
-function StatusInput({ status }: any) {
-  return (
-    <div className="mb-4">
-      <label htmlFor="status" className="font-bold">
-        Status
-      </label>
-      <input
-        type="text"
-        id="status"
-        value={status}
-        readOnly
-        className="w-full border border-gray-300 rounded p-2"
-      />
-    </div>
-  )
-}
+export const StatusInput: React.FunctionComponent<StatusInputProps> = ({
+  status
+}) => (
+  <div className="mb-4">
+    <label htmlFor="status" className="font-bold">
+      Status
+    </label>
+    <input
+      type="text"
+      id="status"
+      value={status}
+      readOnly
+      className="w-full border border-gray-300 rounded p-2"
+    />
+  </div>
+)
 
-function App() {
-  const [url, setUrl] = useState('https://jsonplaceholder.typicode.com/todos')
-  const [protocol, setProtocol] = useState('GET')
-  const [response, setResponse] = useState('')
-  const [status, setStatus] = useState('')
-  const [headerKey, setHeaderKey] = useState('')
-  const [headerValue, setHeaderValue] = useState('')
-  const [headers, setHeaders] = useState({})
-  const [body, setBody] = useState('')
+export const API = () => {
+  const [url, setUrl] = useState<string>(
+    'https://jsonplaceholder.typicode.com/todos'
+  )
+  const [protocol, setProtocol] = useState<string>('GET')
+  const [response, setResponse] = useState<string>('')
+  const [status, setStatus] = useState<string>('')
+  const [headerKey, setHeaderKey] = useState<string>('')
+  const [headerValue, setHeaderValue] = useState<string>('')
+  const [headers, setHeaders] = useState<{ [key: string]: string }>({})
+  const [body, setBody] = useState<string>('')
 
   const handleAddHeader = () => {
     setHeaders({ ...headers, [headerKey]: headerValue })
     setHeaderKey('')
     setHeaderValue('')
-    console.log(headers)
   }
 
   const handleRemoveHeader = (key: string | number) => {
     const newHeaders = { ...headers }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     delete newHeaders[key]
     setHeaders(newHeaders)
   }
@@ -258,5 +260,7 @@ function App() {
     </div>
   )
 }
+
+const App = () => <API />
 
 export default App
