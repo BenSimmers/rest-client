@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from 'react'
+import React, { SetStateAction, useState } from 'react'
 import './App.css'
 import {
   BodyInputProps,
@@ -11,7 +11,6 @@ import {
   StatusInputProps,
   UrlInputProps
 } from './utils/types'
-import React from 'react'
 
 export const UrlInput = ({ url, onChange }: UrlInputProps) => (
   <div className="mb-4">
