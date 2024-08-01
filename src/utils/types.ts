@@ -1,38 +1,61 @@
-import { SetStateAction } from 'react'
+import { ChangeEvent } from 'react'
 
-export type UrlInputProps = {
+// Common type for headers
+type Headers = { [key: string]: string }
+
+// Props for URL input component
+export interface UrlInputProps {
   url: string
-  onChange: (e: { target: { value: SetStateAction<string> } }) => void
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
-export type ProtocolSelectProps = {
+// Props for protocol select component
+export interface ProtocolSelectProps {
   protocol: string
-  onChange: (e: { target: { value: SetStateAction<string> } }) => void
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void
 }
 
-export type HeadersInputProps = {
+// Props for headers input component
+export interface HeadersInputProps {
   headerKey: string
   headerValue: string
-  onKeyChange: (e: { target: { value: SetStateAction<string> } }) => void
-  onValueChange: (e: { target: { value: SetStateAction<string> } }) => void
+  onKeyChange: (e: ChangeEvent<HTMLInputElement>) => void
+  onValueChange: (e: ChangeEvent<HTMLInputElement>) => void
   onAddHeader: () => void
-  headers: { [key: string]: string }
-  onRemoveHeader: (key: string | number) => void
+  headers: Headers
+  onRemoveHeader: (key: string) => void
 }
 
-export type BodyInputProps = {
+// Props for body input component
+export interface BodyInputProps {
   body: string
-  onChange: (e: { target: { value: SetStateAction<string> } }) => void
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
 }
 
-export type SendButtonProps = {
+// Props for send button component
+export interface SendButtonProps {
   onClick: () => void
 }
 
-export type ResponseTextareaProps = {
+// Props for response textarea component
+export interface ResponseTextareaProps {
   response: string
 }
 
-export type StatusInputProps = {
+// Props for status input component
+export interface StatusInputProps {
   status: string
 }
+
+export enum HTTPMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE'
+}
+
+export const isValidProtocolTypeGuard = (
+  protocol: string
+): protocol is HTTPMethod =>
+  Object.values(HTTPMethod).includes(protocol as HTTPMethod)

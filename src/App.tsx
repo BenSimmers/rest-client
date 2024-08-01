@@ -1,24 +1,32 @@
 import { SetStateAction, useState } from 'react'
 import './App.css'
+import {
+  BodyInputProps,
+  HeadersInputProps,
+  HTTPMethod,
+  isValidProtocolTypeGuard,
+  ProtocolSelectProps,
+  ResponseTextareaProps,
+  SendButtonProps,
+  StatusInputProps,
+  UrlInputProps
+} from './utils/types'
+import React from 'react'
 
-
-
-export const UrlInput = ({ url, onChange }: UrlInputProps) => {
-  return (
-    <div className="mb-4">
-      <label htmlFor="url" className="font-bold">
-        URL
-      </label>
-      <input
-        type="text"
-        id="url"
-        value={url}
-        onChange={onChange}
-        className="w-full border border-gray-300 rounded p-2"
-      />
-    </div>
-  )
-}
+export const UrlInput = ({ url, onChange }: UrlInputProps) => (
+  <div className="mb-4">
+    <label htmlFor="url" className="font-bold">
+      URL
+    </label>
+    <input
+      type="text"
+      id="url"
+      value={url}
+      onChange={onChange}
+      className="w-full border border-gray-300 rounded p-2"
+    />
+  </div>
+)
 
 export const ProtocolSelect: React.FunctionComponent<ProtocolSelectProps> = ({
   protocol,
@@ -34,10 +42,15 @@ export const ProtocolSelect: React.FunctionComponent<ProtocolSelectProps> = ({
       onChange={onChange}
       className="w-full border border-gray-300 rounded p-2"
     >
-      <option>GET</option>
-      <option>POST</option>
-      <option>PUT</option>
-      <option>DELETE</option>
+      {Object.values(HTTPMethod).map((method) => (
+        <option
+          key={method}
+          value={method}
+          disabled={!isValidProtocolTypeGuard(method)}
+        >
+          {method}
+        </option>
+      ))}
     </select>
   </div>
 )
@@ -50,59 +63,57 @@ const HeadersInput: React.FunctionComponent<HeadersInputProps> = ({
   onAddHeader,
   headers,
   onRemoveHeader
-}) => {
-  return (
-    <div className="mb-4">
-      <label htmlFor="headers" className="font-bold">
-        Headers
-      </label>
-      <div className="flex">
-        <input
-          type="text"
-          placeholder="Key"
-          aria-label="Key"
-          aria-describedby="basic-addon2"
-          value={headerKey}
-          onChange={onKeyChange}
-          className="w-1/3 mr-2 border border-gray-300 rounded p-2"
-        />
-        <input
-          type="text"
-          placeholder="Value"
-          aria-label="Value"
-          aria-describedby="basic-addon2"
-          value={headerValue}
-          onChange={onValueChange}
-          className="w-1/3 mr-2 border border-gray-300 rounded p-2"
-        />
+}) => (
+  <div className="mb-4">
+    <label htmlFor="headers" className="font-bold">
+      Headers
+    </label>
+    <div className="flex">
+      <input
+        type="text"
+        placeholder="Key"
+        aria-label="Key"
+        aria-describedby="basic-addon2"
+        value={headerKey}
+        onChange={onKeyChange}
+        className="w-1/3 mr-2 border border-gray-300 rounded p-2"
+      />
+      <input
+        type="text"
+        placeholder="Value"
+        aria-label="Value"
+        aria-describedby="basic-addon2"
+        value={headerValue}
+        onChange={onValueChange}
+        className="w-1/3 mr-2 border border-gray-300 rounded p-2"
+      />
 
-        <div>
-          <button
-            type="button"
-            onClick={onAddHeader}
-            className="bg-blue-500 hover:bg-blue-600 text-white rounded py-2 px-4"
-          >
-            Add
-          </button>
-        </div>
-      </div>
-      <div className="mt-2">
-        {Object.keys(headers).map((key) => (
-          <div key={key} className="flex items-center">
-            <span className="mr-2">{key}</span>
-            <span>{headers[key]}</span>
-            <button
-              onClick={() => onRemoveHeader(key)}
-              className="bg-red-500 hover:bg-red-600 text-white rounded py-1 px-2 ml-2"
-            >
-              X
-            </button>
-          </div>
-        ))}
+      <div>
+        <button
+          type="button"
+          onClick={onAddHeader}
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded py-2 px-4"
+        >
+          Add
+        </button>
       </div>
     </div>
-  )
-}
+    <div className="mt-2">
+      {Object.keys(headers).map((key) => (
+        <div key={key} className="flex items-center">
+          <span className="mr-2">{key}</span>
+          <span>{headers[key]}</span>
+          <button
+            onClick={() => onRemoveHeader(key)}
+            className="bg-red-500 hover:bg-red-600 text-white rounded py-1 px-2 ml-2"
+          >
+            X
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)
 
 export const BodyInput: React.FunctionComponent<BodyInputProps> = ({
   body,
@@ -168,11 +179,11 @@ export const StatusInput: React.FunctionComponent<StatusInputProps> = ({
   </div>
 )
 
-export const API = () => {
+const API: React.FunctionComponent = () => {
   const [url, setUrl] = useState<string>(
     'https://jsonplaceholder.typicode.com/todos'
   )
-  const [protocol, setProtocol] = useState<string>('GET')
+  const [protocol, setProtocol] = useState<string>(HTTPMethod.GET)
   const [response, setResponse] = useState<string>('')
   const [status, setStatus] = useState<string>('')
   const [headerKey, setHeaderKey] = useState<string>('')
@@ -180,20 +191,23 @@ export const API = () => {
   const [headers, setHeaders] = useState<{ [key: string]: string }>({})
   const [body, setBody] = useState<string>('')
 
-  const handleAddHeader = () => {
+  const handleAddHeader = React.useCallback(() => {
     setHeaders({ ...headers, [headerKey]: headerValue })
     setHeaderKey('')
     setHeaderValue('')
-  }
+  }, [headers, headerKey, headerValue])
 
-  const handleRemoveHeader = (key: string | number) => {
-    const newHeaders = { ...headers }
-    delete newHeaders[key]
-    setHeaders(newHeaders)
-  }
+  const handleRemoveHeader = React.useCallback(
+    (key: string) => {
+      const newHeaders = { ...headers }
+      delete newHeaders[key]
+      setHeaders(newHeaders)
+    },
+    [headers]
+  )
 
-  const handleSend = async () => {
-    if (protocol === 'GET' || protocol === 'DELETE') {
+  const handleSend = React.useCallback(async () => {
+    if (protocol === HTTPMethod.GET || protocol === HTTPMethod.DELETE) {
       const response = await fetch(url, {
         method: protocol,
         headers
@@ -203,17 +217,22 @@ export const API = () => {
       setStatus(response.status.toString())
     }
 
-    if (protocol === 'POST' || protocol === 'PUT') {
+    if (
+      protocol === HTTPMethod.POST ||
+      protocol === HTTPMethod.PUT ||
+      protocol === HTTPMethod.PATCH
+    ) {
       const response = await fetch(url, {
         method: protocol,
         headers,
         body
       })
+
       const data = await response.json()
       setResponse(JSON.stringify(data, null, 2))
       setStatus(response.status.toString())
     }
-  }
+  }, [url, protocol, headers, body])
 
   return (
     <div className="container mx-auto p-4">
@@ -261,6 +280,6 @@ export const API = () => {
   )
 }
 
-const App = () => <API />
+const App: React.FunctionComponent = () => <API />
 
 export default App
