@@ -1,5 +1,14 @@
 import React, { useState } from 'react'
 import { HTTPMethod } from '../types'
+import { v4 as uuidv4 } from 'uuid'
+
+export type Request = {
+  id: string
+  url: string
+  protocol: string
+  headers: { [key: string]: string }
+  body: string
+}
 
 export const useRest = () => {
   const [url, setUrl] = useState<string>(
@@ -56,6 +65,48 @@ export const useRest = () => {
     }
   }, [url, protocol, headers, body])
 
+  const saveRequest = React.useCallback(() => {
+    const request: Request = {
+      id: uuidv4(),
+      url,
+      protocol,
+      headers,
+      body
+    }
+
+    const requests = JSON.parse(localStorage.getItem('requests') || '[]')
+    requests.push(request)
+    localStorage.setItem('requests', JSON.stringify(requests))
+
+    setUrl('')
+    setProtocol(HTTPMethod.GET)
+    setHeaders({})
+    setBody('')
+  }, [])
+
+  const loadRequest = React.useCallback((requestId: string) => {
+    // setUrl(request.url)
+    // setProtocol(request.protocol)
+    // setHeaders(request.headers)
+    // setBody(request.body)
+
+    const requests = JSON.parse(localStorage.getItem('requests') || '[]')
+    const request = requests.find(
+      (request: Request) => request.id === requestId
+    )
+    return request
+  }, [])
+
+  const getAllRequests = React.useCallback(() => {
+    return JSON.parse(localStorage.getItem('requests') || '[]')
+  }, [])
+
+  const deleteRequest = React.useCallback((id: string) => {
+    const requests = JSON.parse(localStorage.getItem('requests') || '[]')
+    const newRequests = requests.filter((request: Request) => request.id !== id)
+    localStorage.setItem('requests', JSON.stringify(newRequests))
+  }, [])
+
   return {
     url,
     setUrl,
@@ -66,12 +117,17 @@ export const useRest = () => {
     headerKey,
     setHeaderKey,
     headerValue,
+    setHeaders,
     setHeaderValue,
     headers,
     body,
     setBody,
     handleAddHeader,
     handleRemoveHeader,
-    handleSend
+    handleSend,
+    saveRequest,
+    loadRequest,
+    getAllRequests,
+    deleteRequest
   }
 }
