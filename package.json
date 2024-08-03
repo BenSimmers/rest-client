@@ -6,7 +6,7 @@
     "build": "tsc && vite build",
     "serve": "vite preview --port 3000",
     "lint": "eslint . --ext .ts,.tsx,.js",
-    "test": "jest"
+    "test": "vitest"
   },
   "dependencies": {
     "react": "^18.3.1",
